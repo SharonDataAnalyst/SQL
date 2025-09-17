@@ -1,0 +1,107 @@
+CREATE TABLE vips (
+     member_id INTEGER PRIMARY KEY
+   , last_name TEXT
+   , first_name TEXT
+   , event INTEGER
+   , provides_feedback_to INTEGER
+   , association TEXT
+   , assoc_type TEXT
+   , member_since INTEGER
+   );
+   
+CREATE TABLE reservations ( 
+    member_id INTEGER
+  , hotel INTEGER
+  , welcome_rsvp BIT
+  , dinner_rsvp BIT
+  );
+ 
+ 
+CREATE TABLE events (
+    event_id INTEGER PRIMARY KEY
+  , event_name TEXT
+  , event_type TEXT
+  );
+  
+
+CREATE TABLE hotels (
+    hotel_id INTEGER PRIMARY KEY
+  , hotel_name TEXT
+  , address TEXT
+  );
+
+
+-- 1.LEFT JOIN: List all the VIPs (last and first name) and any panels they are presenting at.
+
+SELECT vips.last_name,
+	     vips.first_name,
+       events.event_type
+FROM vips
+LEFT JOIN events
+ON vips.event = events.event_id;
+
+
+--2.INNER JOIN: Find the names of VIPs who have RSVP’d for the welcome event
+
+SELECT vips.first_name,
+	     vips.last_name
+FROM vips
+INNER JOIN reservations
+ON vips.member_id = reservations.member_id
+WHERE reservations.welcome_rsvp = '1';
+
+-- 3.Multiple JOINs: Retrieve event names, attendee names, and their hotel names.
+
+SELECT events.event_name,
+	     vips.first_name,
+       vips.last_name,
+       hotels.hotel_name
+FROM vips
+INNER JOIN events
+ON vips.event = events.event_id
+LEFT JOIN reservations
+ON vips.member_id = reservations.member_id
+LEFT JOIN hotels
+ON reservations.hotel = hotels.hotel_id;
+
+-- 4.SELF JOIN: Find VIPs who provide feedback to others and the corresponding VIPs who receive their feedback.
+
+SELECT giver.first_name AS giver_first,
+       giver.last_name  AS giver_last,
+       receiver.first_name AS receiver_first,
+       receiver.last_name  AS receiver_last
+FROM vips AS giver
+JOIN vips AS receiver
+ON giver.provides_feedback_to = receiver.member_id;
+
+-- 5.Query with a Subquery: Find VIPs staying at the hotel with the most reservations.
+
+SELECT v.first_name, v.last_name, h.hotel_name
+FROM vips v
+JOIN reservations r ON v.member_id = r.member_id
+JOIN hotels h ON r.hotel = h.hotel_id
+WHERE r.hotel = (
+    SELECT hotel 
+    FROM reservations 
+    GROUP BY hotel 
+    ORDER BY COUNT(*) DESC 
+    LIMIT 1);
+
+-- 6.Find the number of VIPs attending each event, ordered by event attendance
+
+SELECT e.event_name, COUNT(v.member_id) AS attendee_count
+FROM events AS e
+LEFT JOIN vips AS v 
+ON e.event_id = v.event
+GROUP BY e.event_name
+ORDER BY attendee_count DESC;
+
+--7.Get a list of all government-affiliated VIPs who have RSVP’d for dinner.
+
+SELECT v.first_name, 
+	     v.last_name, 
+       v.association
+FROM vips AS v
+JOIN reservations r 
+ON v.member_id = r.member_id
+WHERE v.assoc_type = 'government' AND r.dinner_rsvp = 1;
