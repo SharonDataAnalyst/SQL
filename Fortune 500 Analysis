@@ -58,6 +58,8 @@ VALUES
     ('Company JJ', 'Manufacturing', 370.0, 3100, 1, 20, 12, 7.6),
     ('Company KK', 'Healthcare', 150.2, 3400, 0, 16, 8, 5.3);
 
+--THE QUERIES BELOW SHOWCASE MY SKILLS IN REGARDS TO FILTERING, ROUNDING, CASE, GROUPING, AND HAVING.
+
 --The Analysis:
 
 -- 1. Which Industry gives more than 10 weeks maternity leave and has a revenue of more than 200? [filter using WHERE with AND, OR, IN, or NOT IN]
