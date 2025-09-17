@@ -123,6 +123,7 @@ INSERT INTO hotels VALUES
  , (3, 'Four Season''s', '900 Winter Road, Cityville, PA')
  ;
 
+--THE QUERIES BELOW SHOWCASE MY SKILLS IN REGARS TO JOINS.
 
 --THE ANALYSIS:
 
@@ -130,8 +131,8 @@ INSERT INTO hotels VALUES
 -- 1.LEFT JOIN: List all the VIPs (last and first name) and any panels they are presenting at.
 
 SELECT vips.last_name,
-	     vips.first_name,
-       events.event_type
+vips.first_name,
+events.event_type
 FROM vips
 LEFT JOIN events
 ON vips.event = events.event_id;
@@ -140,7 +141,7 @@ ON vips.event = events.event_id;
 --2.INNER JOIN: Find the names of VIPs who have RSVP’d for the welcome event
 
 SELECT vips.first_name,
-	     vips.last_name
+vips.last_name
 FROM vips
 INNER JOIN reservations
 ON vips.member_id = reservations.member_id
@@ -149,9 +150,9 @@ WHERE reservations.welcome_rsvp = '1';
 -- 3.Multiple JOINs: Retrieve event names, attendee names, and their hotel names.
 
 SELECT events.event_name,
-	     vips.first_name,
-       vips.last_name,
-       hotels.hotel_name
+vips.first_name,
+vips.last_name,
+hotels.hotel_name
 FROM vips
 INNER JOIN events
 ON vips.event = events.event_id
@@ -163,16 +164,18 @@ ON reservations.hotel = hotels.hotel_id;
 -- 4.SELF JOIN: Find VIPs who provide feedback to others and the corresponding VIPs who receive their feedback.
 
 SELECT giver.first_name AS giver_first,
-       giver.last_name  AS giver_last,
-       receiver.first_name AS receiver_first,
-       receiver.last_name  AS receiver_last
+giver.last_name  AS giver_last,
+receiver.first_name AS receiver_first,
+receiver.last_name  AS receiver_last
 FROM vips AS giver
 JOIN vips AS receiver
 ON giver.provides_feedback_to = receiver.member_id;
 
 -- 5.Query with a Subquery: Find VIPs staying at the hotel with the most reservations.
 
-SELECT v.first_name, v.last_name, h.hotel_name
+SELECT v.first_name, 
+v.last_name, 
+h.hotel_name
 FROM vips v
 JOIN reservations r ON v.member_id = r.member_id
 JOIN hotels h ON r.hotel = h.hotel_id
@@ -185,7 +188,8 @@ WHERE r.hotel = (
 
 -- 6.Find the number of VIPs attending each event, ordered by event attendance
 
-SELECT e.event_name, COUNT(v.member_id) AS attendee_count
+SELECT e.event_name, 
+COUNT(v.member_id) AS attendee_count
 FROM events AS e
 LEFT JOIN vips AS v 
 ON e.event_id = v.event
@@ -195,8 +199,8 @@ ORDER BY attendee_count DESC;
 --7.Get a list of all government-affiliated VIPs who have RSVP’d for dinner.
 
 SELECT v.first_name, 
-	     v.last_name, 
-       v.association
+v.last_name, 
+v.association
 FROM vips AS v
 JOIN reservations r 
 ON v.member_id = r.member_id
