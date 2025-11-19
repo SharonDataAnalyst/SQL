@@ -1,4 +1,4 @@
---The following 7 SQL below showcases how I'm querying a database with multiple tables in it to quantify statistics about customer and order data.
+--The following SQL below showcases how I'm querying a database with multiple tables in it to quantify statistics about customer and order data.
 
 --How many many unique orders were placed in January? In other words, how many distinct order ids do we have?
 
@@ -55,3 +55,57 @@ ON FEB.orderid=cust.order_id
 WHERE Feb.Quantity>2
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
+
+--How many of each type of headphone were sold in February?
+
+SELECT SUM(quantity) AS total_headphones, product
+FROM BIT_DB.FebSales AS Feb
+WHERE product LIKE '%headphones%'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY product;
+
+
+--What was the average amount spent per account in February?
+
+SELECT AVG (quantity*price)
+FROM BIT_DB.FebSales As Feb
+LEFT JOIN BIT_DB.customers AS cust
+ON FEB.orderid=cust.order_id
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID';
+
+
+--Find order ids from Georgia (GA) where the order has an average price greater than $1,000. Only find orders from dates beginning with ‘04/1’. 
+
+SELECT orderID
+FROM BIT_DB.AprSales
+WHERE orderdate LIKE '04/1%'
+AND location LIKE '%GA%'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY orderID
+HAVING AVG(price) > 1000;
+
+
+--You’ve been given the following results from the MaySales table. Can you reverse engineer a SQL query that returns these results? 
+--The result set will naturally only return 10 rows (i.e., you will not have to use LIMIT to get to 10 results).
+
+SELECT location, orderID
+FROM BIT_DB.MaySales
+WHERE orderID LIKE '1943_5'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+ORDER BY orderID;
+
+
+--Which product brought in the most revenue in January and how much revenue did it bring in total?
+--In other words, show the one product that generated the most revenue (revenue being equivalent to quantity of an item multiplied by the item’s price). 
+
+SELECT product, SUM(price*quantity) AS revenue
+FROM BIT_DB.JanSales
+GROUP BY product
+ORDER BY revenue DESC
+LIMIT 1;
+
+
